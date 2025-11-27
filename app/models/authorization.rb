@@ -6,7 +6,6 @@ class Authorization < ApplicationRecord
   validates :start_time, presence: true
   validates :end_time, presence: true
   validates :person_id, presence: true
-  validates :company_origin, presence: true
 
   def authorized_at?(time = Time.current)
   return false if start_time.blank? || end_time.blank?
