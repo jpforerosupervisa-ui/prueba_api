@@ -1,20 +1,22 @@
 class AuthorizationsController < ApplicationController
-  def create
-    person = Person.find_by(identification_number: params[:identification_number])
+  include AuthorizationsHelper
 
-    if person.nil?
-      person = Person.new(person_params)
-      unless person.save
-        return render json: { errors: person.errors.full_messages }, status: :unprocessable_entity
-      end
+  def create
+    person, person_errors = find_or_create_person(
+      params[:identification_number],
+      person_params
+    )
+
+    if person_errors
+      return render json: { errors: person_errors }, status: :unprocessable_entity
     end
 
-    authorization = person.authorizations.new(authorization_params)
+    authorization, auth_errors = create_authorization_for_person(person, authorization_params)
 
-    if authorization.save
-      render json: authorization, status: :created
+    if auth_errors
+      render json: { errors: auth_errors }, status: :unprocessable_entity
     else
-      render json: { errors: authorization.errors.full_messages }, status: :unprocessable_entity
+      render json: authorization, status: :created
     end
   end
 

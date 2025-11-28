@@ -1,4 +1,6 @@
 class MovementsController < ApplicationController
+  include MovementsHelper
+
   def create
     now = Time.current
 
@@ -43,27 +45,5 @@ class MovementsController < ApplicationController
 
   def movement_params
     params.require(:movement).permit(:identification_number, :way, :vehicle_plate)
-  end
-
-  def find_person_by_identification(identification_number)
-    Person.find_by(identification_number: identification_number)
-  end
-
-  def find_authorization_for_person(person)
-    person.authorizations.last
-  end
-
-  def determine_authorization_message(authorization, current_time)
-    authorization.authorized_at?(current_time) ? "Autorizado" : "No autorizado"
-  end
-
-  def create_movement(authorization:, current_time:, way:, vehicle_plate:, message:)
-    Movement.create!(
-      authorization: authorization,
-      create_time: current_time,
-      way: way,
-      vehicle_plate: vehicle_plate,
-      message: message
-    )
   end
 end
